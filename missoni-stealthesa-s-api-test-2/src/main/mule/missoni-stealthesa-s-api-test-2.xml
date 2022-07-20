@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<http:request-config name="HTTP_Request_configuration" doc:name="HTTP Request configuration" doc:id="e6a95ebb-d590-44d8-80e4-0670c86587d4" >
+		<http:request-connection host="el-st3k-t.missoni.local" port="7821"/>
+	</http:request-config>
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="8ca36593-5bca-4436-b22c-43d2b9c96041" >
+		<http:listener-connection host="localhost" port="8081" />
+	</http:listener-config>
+	<flow name="missoni-stealthesa-s-api-test-2Flow" doc:id="46d37499-021f-49ec-956f-3fba7de49d26" >
+		<http:listener doc:name="Listener" doc:id="fb668b3d-cb18-4754-91e3-0a650aac61f4" config-ref="HTTP_Listener_config" path="/login"/>
+		<flow-ref doc:name="Flow Reference" doc:id="6f191d3c-2787-47ad-8a24-03a6d2529955" name="POST_Subflow_sendToQueue" />
+	</flow>
+	<sub-flow name="POST_Subflow_sendToQueue" doc:id="77ef3580-f580-443b-a721-9c6cd9ed385b" >
+		<logger level="INFO" doc:name="Logger" doc:id="96b8df79-d993-4abe-a68e-eb8703a11f8c" message="post:\sendToQueue:application\xml:stealthesa-s-api-config" />
+		<http:request method="POST" doc:name="Request_POST" doc:id="03d6a8f8-d542-4438-8b17-070220cf21a5" config-ref="HTTP_Request_configuration" path="/StealthApi/v1/core/system/security/login" outputMimeType="text/xml" outputEncoding="iso 10646/unicode(utf-8)" sendBodyMode="AUTO" requestStreamingMode="AUTO">
+			<http:body ><![CDATA[#[output application/x-www-form-urlencoded
+---
+{
+	'Username': 'fgps',
+	'Password': 'fgps123'
+}]]]></http:body>
+		</http:request>
+	</sub-flow>
+</mule>
